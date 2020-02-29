@@ -1,3 +1,5 @@
+# ABS-B Message Decoder
+
 def hex2bin(hexstr):
     """Convert a hexidecimal string to binary string"""
     binstr = bin(int(hexstr, 16))[2:]
