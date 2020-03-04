@@ -1,5 +1,6 @@
 # ABS-B Message Decoder
 import numpy as np
+import math
 
 def hex2bin(hexstr):
     """Convert a hexidecimal string to binary string"""
@@ -191,3 +192,44 @@ def altitude(msg):
         return alt
     else:
         return None
+
+def velocity(msg):
+    """Decode aircraft velocity
+    Args:
+        msg (string): 28 bytes hexadecimal message string
+    Returns:
+        (int, float, int, string): speed (kt), heading (degree),
+            rate of climb/descend (ft/min), speed type 
+            ('GS' for ground speed, 'AS' for airspeed)
+    """
+    if typecode(msg) != 19:
+        raise RuntimeError("%s: Not a airborne velocity message" % msg)
+
+    msgbin = hex2bin(msg)
+    subtype = bin2int(msgbin[37:40])
+
+    if subtype in (1,2):
+        s_ew = msgbin[45]
+        s_ns = msgbin[56]
+        v_ew = bin2int(msgbin[46:56]) - 1 # east-west velocity
+        v_ns = bin2int(msgbin[57:67]) - 1 # north-south velocity
+
+        v_we = -v_ew if s_ew else v_ew
+        v_sn = -v_ns if s_ns else v_ns
+        
+        spd = math.sqrt(v_we*v_we + v_sn*v_sn) # kts
+
+        hdg = math.atan2(v_we, v_sn)
+        hdg = math.degrees(hdg) 
+        hdg = hdg if hdg >= 0 else hdg + 360
+
+        tag = 'GS'
+    else:
+        hdg = bin2int(msgbin[46:56]) / 1024.0 * 360
+        spd = bin2int(msgbin[57:67])
+
+    s_vr = msgbin[68]
+    vr = (bin2int(msgbin[69:78]) -1) * 64  # vertical rate
+    rocd = -vr if s_vr else vr  # rate of climb/descend
+
+    return int(spd), round(hdg, 1), int(rocd), tag
