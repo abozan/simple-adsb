@@ -7,11 +7,11 @@ class TestDecoder(unittest.TestCase):
     msg_pos2 = "8D40621D58C386435CC412692AD6"
     msg_vel = "8D485020994409940838175B284F"
 
-    def test_df(self):
-        self.assertEqual(decoder.df(TestDecoder.msg), 17)
+    def test_downlink_format(self):
+        self.assertEqual(decoder.downlink_format(TestDecoder.msg), 17)
 
-    def test_ca(self):
-        self.assertEqual(decoder.ca(TestDecoder.msg), 5)
+    def test_capability_identifier(self):
+        self.assertEqual(decoder.capability_identifier(TestDecoder.msg), 5)
 
     def test_icao(self):
         self.assertEqual(decoder.icao(TestDecoder.msg), "010010000100000011010110")
@@ -19,8 +19,8 @@ class TestDecoder(unittest.TestCase):
     def test_typecode(self):
         self.assertEqual(decoder.typecode(TestDecoder.msg), 4)
 
-    def test_ec(self):
-        self.assertEqual(decoder.ec(TestDecoder.msg), 0)
+    def test_emitter_category(self):
+        self.assertEqual(decoder.emitter_category(TestDecoder.msg), 0)
 
     def test_callsign(self):
         self.assertEqual(decoder.callsign(TestDecoder.msg), "KLM1023")
@@ -31,17 +31,17 @@ class TestDecoder(unittest.TestCase):
         self.assertEqual(decoder.cprNL(-88), 1)
         self.assertEqual(decoder.cprNL(30), 51)
 
-    def test_oeFlag(self):
-        self.assertEqual(decoder.oeFlag(TestDecoder.msg_pos1), 0)
-        self.assertEqual(decoder.oeFlag(TestDecoder.msg_pos2), 1)
+    def test_odd_even_flag(self):
+        self.assertEqual(decoder.odd_even_flag(TestDecoder.msg_pos1), 0)
+        self.assertEqual(decoder.odd_even_flag(TestDecoder.msg_pos2), 1)
 
-    def test_cprlat(self):
-        self.assertEqual(decoder.cprlat(TestDecoder.msg_pos1), 93000)
-        self.assertEqual(decoder.cprlat(TestDecoder.msg_pos2), 74158)
+    def test_cpr_latitude(self):
+        self.assertEqual(decoder.cpr_latitude(TestDecoder.msg_pos1), 93000)
+        self.assertEqual(decoder.cpr_latitude(TestDecoder.msg_pos2), 74158)
 
-    def test_cprlon(self):
-        self.assertEqual(decoder.cprlon(TestDecoder.msg_pos1), 51372)
-        self.assertEqual(decoder.cprlon(TestDecoder.msg_pos2), 50194)
+    def test_cpr_longitude(self):
+        self.assertEqual(decoder.cpr_longitude(TestDecoder.msg_pos1), 51372)
+        self.assertEqual(decoder.cpr_longitude(TestDecoder.msg_pos2), 50194)
 
     def test_airborne_position(self):
         self.assertEqual(decoder.airborne_position(TestDecoder.msg_pos1, TestDecoder.msg_pos2,1,0), (52.25720, 3.91937))

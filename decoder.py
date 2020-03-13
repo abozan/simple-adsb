@@ -13,12 +13,12 @@ def bin2int(binstr):
     """Convert a binary string to decimal"""
     return int(binstr, 2)
 
-def df(msg):
+def downlink_format(msg):
     """Decode downlink format value, bits 1 to 5"""
     msgbin = hex2bin(msg)
     return bin2int(msgbin[:5])
 
-def ca(msg):
+def capability_identifier(msg):
     """Decode capability identifier, bits 6 to 8"""
     msgbin = hex2bin(msg)
     return bin2int(msgbin[5:8])
@@ -33,7 +33,7 @@ def typecode(msg):
     msgbin = hex2bin(msg)
     return bin2int(msgbin[32:37])
 
-def ec(msg):
+def emitter_category(msg):
     """Decode emitter category, bits 38 to 40"""
     msgbin = hex2bin(msg)
     return bin2int(msgbin[37:40])
@@ -80,7 +80,7 @@ def cprNL(lat):
     NL = np.floor(nl)
     return NL
 
-def oeFlag(msg):
+def odd_even_flag(msg):
     """Check the odd/even flag. Bit 54, 0 for even, 1 for odd.
     Args:
         msg (string): 28 bytes hexadecimal message string
@@ -93,7 +93,7 @@ def oeFlag(msg):
     msgbin = hex2bin(msg)
     return int(msgbin[53])
 
-def cprlat(msg):
+def cpr_latitude(msg):
     """CPR encoded latitude
     Args: 
         msg (string): 28 bytes hexadecimal message string
@@ -106,7 +106,7 @@ def cprlat(msg):
     msgbin = hex2bin(msg)
     return bin2int(msgbin[54:71])
 
-def cprlon(msg):
+def cpr_longitude(msg):
     """CPR encoded longitude
     Args:
         msg (string): 28 bytes hexadecimal message string
@@ -130,10 +130,10 @@ def airborne_position(msg0, msg1, t0, t1):
     Returns:
         (float, float): (latitude, longitude) of aircraft
     """
-    cprlat_even = cprlat(msg0) / 131072.0
-    cprlon_even = cprlon(msg0) / 131072.0
-    cprlat_odd  = cprlat(msg1) / 131072.0
-    cprlon_odd  = cprlon(msg1) / 131072.0
+    cprlat_even = cpr_latitude(msg0) / 131072.0
+    cprlon_even = cpr_longitude(msg0) / 131072.0
+    cprlat_odd  = cpr_latitude(msg1) / 131072.0
+    cprlon_odd  = cpr_longitude(msg1) / 131072.0
 
     # calculate the latitude index j
     j = np.floor(59 * cprlat_even - 60 * cprlat_odd + 0.5)
